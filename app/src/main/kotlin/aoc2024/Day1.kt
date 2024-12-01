@@ -14,20 +14,16 @@ fun main1() {
 3   9
 3   3
 """
-    var indexOneList = mutableListOf<Int>()
-    var indexTwoList = mutableListOf<Int>()
+    val (indexOneList, indexTwoList) = exampleInput.lines().filter { it.isNotBlank() }.map {
+        val (first, second) = it.split("   ").map { stringNumber -> stringNumber.toInt() }
+        first to second
+    }.unzip()
 
-    "/day1".readFileText().lines().filter { it.isNotBlank() }.forEach {
-        val (hello, hello2) = it.split("   ").map { it.toInt() }
-        indexOneList.add(hello)
-        indexTwoList.add(hello2)
-    }
+    val sortedIndexOneList = indexOneList.sorted()
+    val sortedIndexTwoList = indexTwoList.sorted()
 
-    indexOneList.sort()
-    indexTwoList.sort()
-
-    val distanceList = indexOneList.mapIndexed { index, indexOneItem ->
-       abs(indexOneItem - indexTwoList[index])
+    val distanceList = sortedIndexOneList.mapIndexed { index, indexOneItem ->
+       abs(indexOneItem - sortedIndexTwoList[index])
     }
     println("${distanceList.sum()}")
 }
@@ -41,17 +37,13 @@ fun main() {
 3   9
 3   3
 """
-    var indexOneList = mutableListOf<Int>()
-    var indexTwoList = mutableListOf<Int>()
 
-   "/day1".readFileText().lines().filter { it.isNotBlank() }.forEach {
-        val (hello, hello2) = it.split("   ").map { it.toInt() }
-        indexOneList.add(hello)
-        indexTwoList.add(hello2)
-    }
+   val (indexOneList, indexTwoList) = exampleInput.lines().filter { it.isNotBlank() }.map {
+       val (first, second) = it.split("   ").map { stringNumber -> stringNumber.toInt() }
+         first to second
+    }.unzip()
     val countMap = indexTwoList.groupingBy { it }.eachCount()
     val similarityScores = indexOneList.map { it -> it * (countMap[it] ?: 0) }
 
     println("${similarityScores.sum()}")
-
 }
