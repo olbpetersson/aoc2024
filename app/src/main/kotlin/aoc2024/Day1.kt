@@ -5,7 +5,7 @@ package aoc2024
 
 import kotlin.math.abs
 
-fun main() {
+fun main1() {
     val exampleInput = """
 3   4
 4   3
@@ -29,5 +29,29 @@ fun main() {
     val distanceList = indexOneList.mapIndexed { index, indexOneItem ->
        abs(indexOneItem - indexTwoList[index])
     }
-    println("$distanceList ${distanceList.sum()}")
+    println("${distanceList.sum()}")
+}
+
+fun main() {
+    val exampleInput = """
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+"""
+    var indexOneList = mutableListOf<Int>()
+    var indexTwoList = mutableListOf<Int>()
+
+   "/day1".readFileText().lines().filter { it.isNotBlank() }.forEach {
+        val (hello, hello2) = it.split("   ").map { it.toInt() }
+        indexOneList.add(hello)
+        indexTwoList.add(hello2)
+    }
+    val countMap = indexTwoList.groupingBy { it }.eachCount()
+    val similarityScores = indexOneList.map { it -> it * (countMap[it] ?: 0) }
+
+    println("${similarityScores.sum()}")
+
 }
