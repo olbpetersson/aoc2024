@@ -5,7 +5,7 @@ package aoc2024
 
 import kotlin.math.abs
 
-fun main() {
+fun main11() {
     val exampleInput = """
 7 6 4 2 1
 1 2 7 8 9
@@ -18,9 +18,8 @@ fun main() {
         it.split(" ").map { stringNumber -> stringNumber.toInt() }
     }
     val safeReports = reports.mapNotNull { report ->
-        var increasing: Boolean? = null
         val (first, second) = report
-        increasing = increaseValue(first, second)
+        val increasing: Boolean? = increaseValue(first, second)
         val isSafe = (1..<report.size).all { index ->
             val primary = report[index]
             val secondary = report[index - 1]
@@ -33,8 +32,52 @@ fun main() {
 }
 
 fun increaseValue(first: Int, second: Int): Boolean? {
-    return if (first > second) true else if(second > first) false else null
+    return if (first > second) true else if (second > first) false else null
 }
 
-fun main22() {
+fun safeCheck(primary: Int, secondary: Int, increasing: Boolean?): Boolean {
+    return abs(primary - secondary) <= 3 && increasing == increaseValue(primary, secondary)
+}
+
+fun main() {
+    val exampleInput = """
+7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9
+"""
+
+    val reports = exampleInput.lines().filter { it.isNotBlank() }.map {
+        it.split(" ").map { stringNumber -> stringNumber.toInt() }
+    }
+    val safeReports = reports.map { report ->
+        var i = 0
+        val (first, second) = report
+        val increasing: Boolean? = increaseValue(first, second)
+        while (i < report.size - 1) {
+            val primary = report[i]
+            val secondary = report[i + 1]
+            if (!safeCheck(primary, secondary, increasing)) {
+                return@map (i..i + 1).any { index ->
+                    report.toMutableList().also { it.removeAt(index) }.isSafeReport()                }
+            }
+            i++
+        }
+        return@map true
+    }.filter { it }
+    println("${safeReports.count()}")
+
+
+}
+
+private fun List<Int>.isSafeReport(): Boolean {
+    val (first, second) = this
+    val increasing: Boolean? = increaseValue(first, second)
+    return (1..<this.size).all { index ->
+        val primary = this[index]
+        val secondary = this[index - 1]
+        abs(primary - secondary) <= 3 && increasing == increaseValue(secondary, primary)
+    }
 }
