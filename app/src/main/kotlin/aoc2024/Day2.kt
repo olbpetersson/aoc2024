@@ -49,7 +49,7 @@ fun main() {
 1 3 6 7 9
 """
 
-    val reports = exampleInput.lines().filter { it.isNotBlank() }.map {
+    val reports = "/day2".readFileText().lines().filter { it.isNotBlank() }.map {
         it.split(" ").map { stringNumber -> stringNumber.toInt() }
     }
     val safeReports = reports.map { report ->
@@ -60,7 +60,7 @@ fun main() {
             val primary = report[i]
             val secondary = report[i + 1]
             if (!safeCheck(primary, secondary, increasing)) {
-                return@map (i..i + 1).any { index ->
+                return@map report.indices.any { index ->
                     report.toMutableList().also { it.removeAt(index) }.isSafeReport()                }
             }
             i++
@@ -78,6 +78,7 @@ private fun List<Int>.isSafeReport(): Boolean {
     return (1..<this.size).all { index ->
         val primary = this[index]
         val secondary = this[index - 1]
-        abs(primary - secondary) <= 3 && increasing == increaseValue(secondary, primary)
+        val diffValue = abs(primary - secondary)
+        diffValue in (1.. 3) && increasing == increaseValue(secondary, primary)
     }
 }
