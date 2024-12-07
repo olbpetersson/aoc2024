@@ -3,18 +3,48 @@
  */
 package aoc2024
 
-fun main() {
+val digitPattern = Regex("\\d+")
+
+fun main31() {
     val exampleInput = """
         xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
 """
     val input = "/day3".readFileText()
     val pattern = Regex("mul\\(\\d+,\\d+\\)")
-    val digitPattern = Regex("\\d+")
 
+    val sum = sumUpMultiplier(pattern, input)
+    println("sum: $sum")
+}
+
+
+fun main() {
+    val exampleInput = """
+        xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
+"""
+    var doIt = true
+    val input = "/day3".readFileText()
+    val pattern = Regex("mul\\(\\d+,\\d+\\)|do\\(\\)|don't\\(\\)")
     val sum = pattern.findAll(input).sumOf {
-        digitPattern.findAll(it.value).map { it ->
-            it.value.toInt()
-        }.reduce{ acc, item -> acc * item }
+        when(it.value) {
+            "do()" -> {
+                doIt = true
+                0
+            }
+            "don't()" -> {
+                doIt = false
+                0
+            }
+            else -> {
+                if (doIt) sumUpMultiplier(pattern, it.value) else 0
+            }
+        }
     }
     println("sum: $sum")
 }
+
+private fun sumUpMultiplier(pattern: Regex, exampleInput: String) =
+    pattern.findAll(exampleInput).sumOf {
+        digitPattern.findAll(it.value).map { it ->
+            it.value.toInt()
+        }.reduce { acc, item -> acc * item }
+    }
