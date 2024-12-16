@@ -21,7 +21,6 @@ class Day4 {
         exampleInput: String? = null,
         steppingFunctions: List<(Int, Int) -> Pair<Int, Int>> = Day4.steppingFunctions
     ): Int {
-
         val input = "/day4".readFileText(exampleInput)
         val matrix = input.lines().map { it.toList() }
         var count = 0
@@ -57,7 +56,52 @@ class Day4 {
             }
             index++
         }
-        val (xz, yz) = stepFunction(x, y)
         return 1
+    }
+
+    fun solve2(
+        exampleInput: String? = null,
+    ): Int {
+        val input = "/day4".readFileText(exampleInput)
+        val matrix = input.lines().map { it.toList() }
+
+        var count = 0
+        for (y in matrix.indices) {
+            for (x in matrix[y].indices) {
+                val charValue = matrix[y][x]
+                if (charValue == 'M' || charValue == 'S') {
+                    val primary: (Int, Int) -> Pair<Int, Int> = { x: Int, y: Int -> x + 1 to y + 1}
+                    val letters = getLetters(matrix, x, y, primary)
+                    if(letters == "MAS" || letters == "SAM") {
+                        val otherLetters = getLetters(matrix, x+2, y, { x2: Int, y2: Int -> x2 - 1 to y2 + 1})
+                        if(otherLetters == "MAS" || otherLetters == "SAM") {
+                            count++
+                        }
+                    }
+                }
+            }
+        }
+        return count
+    }
+
+    fun getLetters(
+        matrix: List<List<Char>>,
+        initialX: Int,
+        initialY: Int,
+        steppingFunction: (Int, Int) -> Pair<Int, Int>
+    ): String {
+        var returnString = "";
+        var x = initialX;
+        var y = initialY
+        repeat(3) {
+            returnString += matrix[y][x]
+            val (newX, newY) = steppingFunction(x, y)
+            if (newX < 0 || newY < 0 || newX >= matrix[0].size || newY >= matrix.size) {
+                return returnString
+            }
+            x = newX
+            y = newY
+        }
+        return returnString
     }
 }
